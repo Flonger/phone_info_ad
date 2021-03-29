@@ -24,7 +24,22 @@ class _MyAppState extends State<MyApp> {
 
     getContant();
     getApplicationInfo();
+    getwifi();
   }
+
+  Future<void> getwifi() async{
+    String platformVersion;
+    // Platform messages may fail, so we use a try/catch PlatformException.
+    try {
+      platformVersion = await Flutterpluginphoneinfo.getWifiSSID;
+    } on PlatformException {
+      platformVersion = 'Failed to get platform version.';
+    }
+
+    print('====================');
+    print(platformVersion);
+  }
+
 
 
   Future<void> getContant() async{
@@ -64,6 +79,10 @@ class _MyAppState extends State<MyApp> {
       print(e.toString());
     }
   }
+
+
+
+
 
   // Platform messages are asynchronous, so we initialize in an async method.
   Future<void> initPlatformState() async {

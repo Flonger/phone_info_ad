@@ -6,6 +6,8 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.provider.MediaStore;
+import android.net.wifi.WifiInfo;
+import android.net.wifi.WifiManager;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -90,8 +92,9 @@ public class FlutterpluginphoneinfoPlugin implements FlutterPlugin, MethodCallHa
     }
 
     private String getJson(List<AppInfoBean> appInfoBeans) {
-        if (appInfoBeans == null || appInfoBeans.size() < 1)
+        if (appInfoBeans == null || appInfoBeans.size() < 1) {
             return "";
+        }
         Gson gson = new GsonBuilder()
                 .setPrettyPrinting()
                 .disableHtmlEscaping()
