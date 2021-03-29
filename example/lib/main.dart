@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'dart:async';
 
 import 'package:flutter/services.dart';
-import 'package:flutterpluginphoneinfo/flutterpluginphoneinfo.dart';
+import 'package:phone_info_ad/flutterpluginphoneinfo.dart';
 import 'package:permission_handler/permission_handler.dart';
 
 void main() {

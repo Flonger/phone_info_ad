@@ -15,4 +15,9 @@ class Flutterpluginphoneinfo {
     var result = await _channel.invokeMethod('getApplicationInfo');
     return result;
   }
+
+  static Future<String> get getWifiSSID async {
+    var result = await _channel.invokeMethod('getWifiSSID');
+    return result;
+  }
 }

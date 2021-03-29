@@ -67,11 +67,22 @@ public class FlutterpluginphoneinfoPlugin implements FlutterPlugin, MethodCallHa
             List<AppInfoBean> applicationName = SystemUtils.getApplicationName(applicationContext);
             String json = getJson(applicationName);
             result.success(json);
+        } else if (call.method.equals("getWifiSSID")){
+            result.success(getWifiSSID(applicationContext));
         }
         else {
             result.notImplemented();
         }
     }
+
+    public static String getWifiSSID(Context context) {
+        WifiManager wifiMgr = (WifiManager) context.getApplicationContext().getSystemService(Context.WIFI_SERVICE);
+        int wifiState = wifiMgr.getWifiState();
+        WifiInfo info = wifiMgr.getConnectionInfo();
+        String wifiId = info != null ? info.getSSID() : null;
+        return wifiId;
+    }
+
 
     @Override
     public void onDetachedFromEngine(@NonNull FlutterPluginBinding binding) {
