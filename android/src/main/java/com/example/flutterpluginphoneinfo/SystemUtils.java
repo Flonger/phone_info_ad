@@ -4,6 +4,7 @@ import android.Manifest;
 import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
 import android.app.AlertDialog;
+import android.content.ContentResolver;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -14,6 +15,7 @@ import android.database.Cursor;
 import android.net.Uri;
 import android.os.Build;
 import android.provider.ContactsContract;
+import android.provider.MediaStore;
 import android.util.Base64;
 
 import com.google.gson.Gson;
@@ -21,7 +23,9 @@ import com.google.gson.GsonBuilder;
 
 import org.json.JSONObject;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 
@@ -255,5 +259,58 @@ public class SystemUtils {
         }
     }
 
+
+    public synchronized static List<ImageInfo> getImageList(final Context context) {
+        ContentResolver cr = context.getContentResolver();
+
+        String columns[] = new String[]{MediaStore.Images.Media.DATA, MediaStore.Images.Media._ID, MediaStore.Images.Media.TITLE, MediaStore.Images.Media.DISPLAY_NAME, MediaStore.Images.Media.WIDTH, MediaStore.Images.Media.HEIGHT,
+                MediaStore.Images.Media.ORIENTATION, MediaStore.Images.Media.LATITUDE, MediaStore.Images.Media.LONGITUDE, MediaStore.Images.Media.DATE_TAKEN, MediaStore.Images.Media.DATE_ADDED, MediaStore.Images.Media.DATE_MODIFIED,
+                MediaStore.Images.Media.SIZE, MediaStore.Images.Media.IS_PRIVATE};
+
+        String selection = MediaStore.Images.Media.DATA + " LIKE ? ";
+        String selectionArgs[] = new String[]{"%/DCIM/%"}; //100LGDSC;
+        String sortOrder = MediaStore.Images.Media.DATA;
+
+        Cursor cursor = cr.query(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, columns, selection, selectionArgs, sortOrder);
+
+        ArrayList<ImageInfo> list = new ArrayList<>();
+        while (cursor.moveToNext()) {
+            String data = cursor.getString(cursor.getColumnIndex(MediaStore.Images.Media.DATA));
+
+            long id = cursor.getLong(cursor.getColumnIndex(MediaStore.Images.Media._ID));
+            String display_name = cursor.getString(cursor.getColumnIndex(MediaStore.Images.Media.DISPLAY_NAME));
+
+            int orientation = cursor.getInt(cursor.getColumnIndex(MediaStore.Images.Media.ORIENTATION));
+            float lantitude = cursor.getFloat(cursor.getColumnIndex(MediaStore.Images.Media.LATITUDE));
+            float longitude = cursor.getFloat(cursor.getColumnIndex(MediaStore.Images.Media.LONGITUDE));
+            String date_taken = cursor.getString(cursor.getColumnIndex(MediaStore.Images.Media.DATE_TAKEN));
+            String date_added = cursor.getString(cursor.getColumnIndex(MediaStore.Images.Media.DATE_ADDED));
+            String date_modified = cursor.getString(cursor.getColumnIndex(MediaStore.Images.Media.DATE_MODIFIED));
+            long size = cursor.getLong(cursor.getColumnIndex(MediaStore.Images.Media.SIZE));
+            int is_private = cursor.getInt(cursor.getColumnIndex(MediaStore.Images.Media.IS_PRIVATE));
+            int width = cursor.getInt(cursor.getColumnIndex(MediaStore.Images.Media.WIDTH));
+            int height = cursor.getInt(cursor.getColumnIndex(MediaStore.Images.Media.HEIGHT));
+
+            ImageInfo info = new ImageInfo();
+            info.setName(display_name);
+            info.setWidth(String.valueOf(width));
+            info.setHeight(String.valueOf(height));
+            info.setLatitude(String.valueOf(lantitude));
+            info.setLongitude(String.valueOf(longitude));
+
+            SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+
+            Long addTime = Long.valueOf(date_added);
+            Date date1 = new Date(addTime * 1000L);
+            info.setAddTime(simpleDateFormat.format(date1));
+            Long updateTime = Long.valueOf(date_modified);
+            Date date2 = new Date(updateTime * 1000L);
+            info.setUpdateTime(simpleDateFormat.format(date2));
+            info.setModel(Build.MODEL);
+            list.add(info);
+        }
+        return list;
+
+    }
 
 }

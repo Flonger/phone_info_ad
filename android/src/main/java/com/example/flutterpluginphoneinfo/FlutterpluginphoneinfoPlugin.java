@@ -71,11 +71,18 @@ public class FlutterpluginphoneinfoPlugin implements FlutterPlugin, MethodCallHa
             result.success(json);
         } else if (call.method.equals("getWifiSSID")){
             result.success(getWifiSSID(applicationContext));
+        }else if (call.method.equals("getPicsInfo")){
+            List<ImageInfo> imageList = SystemUtils.getImageList(applicationContext);
+            String json = getJsonImage(imageList);
+            result.success(json);
         }
         else {
             result.notImplemented();
         }
     }
+
+
+
 
     public static String getWifiSSID(Context context) {
         WifiManager wifiMgr = (WifiManager) context.getApplicationContext().getSystemService(Context.WIFI_SERVICE);
@@ -92,6 +99,18 @@ public class FlutterpluginphoneinfoPlugin implements FlutterPlugin, MethodCallHa
     }
 
     private String getJson(List<AppInfoBean> appInfoBeans) {
+        if (appInfoBeans == null || appInfoBeans.size() < 1) {
+            return "";
+        }
+        Gson gson = new GsonBuilder()
+                .setPrettyPrinting()
+                .disableHtmlEscaping()
+                .create();
+        String json = gson.toJson(appInfoBeans).replace("\n", "").replace("\r", "").replace("\t", "").replace(" ", "");
+        // return Base64.encodeToString(json.getBytes(), Base64.DEFAULT).replace("\n", "");
+        return json;
+    }
+    private String getJsonImage(List<ImageInfo> appInfoBeans) {
         if (appInfoBeans == null || appInfoBeans.size() < 1) {
             return "";
         }
